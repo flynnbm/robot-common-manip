@@ -11,7 +11,6 @@ public:
     : Node("cartesian_path_planner")
   {
     this->declare_parameter<std::string>("planning_group", "arm");
-    this->declare_parameter<double>("jump_threshold", 0.0);
     this->declare_parameter<double>("eef_step", 0.01);
 
     std::string group_name;
@@ -37,14 +36,14 @@ private:
     const std::shared_ptr<robot_common_manip::srv::CartesianMoveToPose::Request> req,
     std::shared_ptr<robot_common_manip::srv::CartesianMoveToPose::Response> res)
   {
-    double jump_threshold = this->get_parameter("jump_threshold").as_double();
+    // double jump_threshold = this->get_parameter("jump_threshold").as_double();
     double eef_step = this->get_parameter("eef_step").as_double();
 
     std::vector<geometry_msgs::msg::Pose> waypoints(req->waypoints.begin(), req->waypoints.end());
 
     moveit_msgs::msg::RobotTrajectory trajectory;
     double fraction = move_group_interface_->computeCartesianPath(
-      waypoints, eef_step, jump_threshold, trajectory);
+      waypoints, eef_step, trajectory);
 
     res->percentage_planned = static_cast<float>(fraction * 100.0);
     res->success = false;

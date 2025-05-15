@@ -7,7 +7,7 @@ class PosePlanner : public rclcpp::Node
 {
 public:
   PosePlanner()
-    : Node("plan_to_pose_service")
+    : Node("move_to_pose_service")
   {
     this->declare_parameter<std::string>("planning_group", "arm");
 
@@ -18,7 +18,7 @@ public:
       std::shared_ptr<rclcpp::Node>(this, [](rclcpp::Node*){}), group_name);
 
     service_ = this->create_service<robot_common_manip::srv::MoveToPose>(
-      "plan_to_pose",
+      "move_to_pose",
       std::bind(&PosePlanner::handle_request, this, std::placeholders::_1, std::placeholders::_2)
     );
 

@@ -40,8 +40,19 @@ private:
 
     move_group_->setNamedTarget(req->target_name);
 
-    auto result = move_group_->move();
-    res->success = (result == moveit::core::MoveItErrorCode::SUCCESS);
+    // Step 1: Plan
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
+    bool success = (move_group_->plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
+
+    if (!success) {
+      RCLCPP_WARN(this->get_logger(), "Planning to '%s' failed", req->target_name.c_str());
+      res->success = false;
+      return;
+    }
+
+    // Step 2: Execute
+    moveit::core::MoveItErrorCode exec_result = move_group_->execute(plan);
+    res->success = (exec_result == moveit::core::MoveItErrorCode::SUCCESS);
 
     if (res->success)
       RCLCPP_INFO(this->get_logger(), "Motion to '%s' succeeded", req->target_name.c_str());
