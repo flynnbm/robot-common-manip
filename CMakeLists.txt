@@ -19,6 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CartesianMoveToPose.srv"
   "srv/MoveToNamedPose.srv"
   "srv/MoveToPose.srv"
+  "srv/FakeGrasp.srv"
   DEPENDENCIES geometry_msgs
 )
 
@@ -47,16 +48,26 @@ ament_target_dependencies(move_to_pose_service
   moveit_msgs
 )
 
+add_executable(fake_grasp_service src/fake_grasp_service.cpp)
+ament_target_dependencies(fake_grasp_service
+  rclcpp
+  geometry_msgs
+  moveit_ros_planning_interface
+  moveit_msgs
+)
+
 # Link generated service headers
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 target_link_libraries(cartesian_move_to_pose_service ${cpp_typesupport_target})
 target_link_libraries(move_to_named_pose_service ${cpp_typesupport_target})
 target_link_libraries(move_to_pose_service ${cpp_typesupport_target})
+target_link_libraries(fake_grasp_service ${cpp_typesupport_target})
 
 install(TARGETS 
   cartesian_move_to_pose_service
   move_to_named_pose_service
   move_to_pose_service
+  fake_grasp_service
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
